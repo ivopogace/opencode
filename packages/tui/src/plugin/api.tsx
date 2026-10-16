@@ -13,6 +13,7 @@ import type {
 import type { Placement, PlacementKind } from "./structure"
 import { infoStringToFiletype, type MarkdownCodeBlockRenderer } from "@opentui/core"
 import { useRenderer } from "@opentui/solid"
+import { useConfig } from "../config"
 import { useClient } from "../context/client"
 import { useData } from "../context/data"
 import { Keymap } from "../context/keymap"
@@ -66,6 +67,7 @@ export function usePluginHost() {
     owner: getOwner(),
     renderer: useRenderer(),
     client: useClient(),
+    config: useConfig(),
     data: useData(),
     route: useRoute(),
     keymap: Keymap.use(),
@@ -164,6 +166,9 @@ export function createPluginContext(input: {
     },
     get themeMode() {
       return host.themes.mode()
+    },
+    get animations() {
+      return host.config.data.animations ?? true
     },
     markdown: {
       registerCodeBlockRenderer(language, render) {

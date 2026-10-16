@@ -551,6 +551,8 @@ export interface Context {
   readonly attention: Attention
   readonly theme: ResolvedTheme
   readonly themeMode: "dark" | "light"
+  /** Whether the person enabled interface animations; defaults to true. Reactive when read in a Solid computation. */
+  readonly animations: boolean
   readonly markdown: {
     registerCodeBlockRenderer(language: string, render: MarkdownCodeBlockRenderer): () => void
   }
