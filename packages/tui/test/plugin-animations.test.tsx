@@ -10,7 +10,7 @@ async function renderAnimations(info: Info) {
   const service: Interface = {
     get: async () => current,
     update: async (update) => {
-      const draft: Record<string, any> = { ...current }
+      const draft = { ...current }
       update(draft)
       current = draft
       return draft
@@ -35,11 +35,14 @@ async function renderAnimations(info: Info) {
     return <text>{context.animations ? "animated" : "still"}</text>
   }
 
-  const app = await testRender(() => (
-    <ConfigProvider config={createTuiResolvedConfig(info)} service={service}>
-      <Consumer />
-    </ConfigProvider>
-  ))
+  const app = await testRender(
+    () => (
+      <ConfigProvider config={createTuiResolvedConfig(info)} service={service}>
+        <Consumer />
+      </ConfigProvider>
+    ),
+    { width: 40, height: 4 },
+  )
   await app.renderOnce()
   if (!config) throw new Error("Config context was not provided")
   return { app, config, [Symbol.dispose]: () => app.renderer.destroy() }
