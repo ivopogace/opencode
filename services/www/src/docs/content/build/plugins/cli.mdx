@@ -35,23 +35,25 @@ setup(context) {
 }
 ```
 
-`context.animations` follows the person's [`animations`](/cli/config) setting and defaults to `true`. It updates when
-they run `app.toggle.animations`, so read it inside a component or other Solid computation and show a still frame when it
-is `false`:
-
-```tsx
-function Spinner(props: { frame: string }) {
-  const context = usePlugin()
-  return <text>{context.animations ? props.frame : "▪"}</text>
-}
-```
-
 Return a cleanup function for resources owned by the plugin.
 
 ```ts
 setup(context) {
   const stop = context.data.on("session.execution.succeeded", () => {})
   return () => stop()
+}
+```
+
+`context.animations` follows the person's [`animations`](/cli/config) setting and defaults to `true`. It updates when
+they run `app.toggle.animations`, so read it inside a component or other Solid computation and show a still frame when it
+is `false`:
+
+```tsx
+import { usePlugin } from "@opencode/plugin/tui"
+
+function Spinner(props: { frame: string }) {
+  const context = usePlugin()
+  return <text>{context.animations ? props.frame : "▪"}</text>
 }
 ```
 
