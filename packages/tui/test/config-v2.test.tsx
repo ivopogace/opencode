@@ -108,6 +108,10 @@ test("shows the new session location default in settings", () => {
   expect(settings.find((setting) => setting.path.join(".") === "session.new_location")?.default).toBe("launch")
 })
 
+test("shows animations on by default in settings", () => {
+  expect(settings.find((setting) => setting.path.join(".") === "animations")?.default).toBe(true)
+})
+
 test("shows the TPS default in session settings", () => {
   const setting = settings.find((setting) => setting.path.join(".") === "session.tps")
   expect(setting?.category).toBe("Session")
