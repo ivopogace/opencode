@@ -3,7 +3,7 @@ run-name: "${{ format('release {0}{1}', inputs.bump, inputs.version) }}"
 
 # Builds are separated from signing and publishing.
 # - build-* jobs run repository code (`bun run build`, `bun run pack`) with no environment, secrets or id-token.
-# - sign-* and publish-* jobs run in the release environment, check out only .github/release/, and run those
+# - sign-*, publish-* and notify-* jobs run in the release environment, check out only .github/release/, and run those
 #   scripts on verified artifacts, which they treat as data. They never execute repository code.
 # - plan decides version, channel and npm dist-tag from the event, inputs and ref; only a dispatch with a bump or
 #   version on dev reaches latest.
@@ -731,6 +731,23 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          OPENCODE_RELEASE_NOTES: ${{ inputs.release_notes }}
+
+  # The release is published with GITHUB_TOKEN, whose events trigger no workflow, so `on: release` never fires.
+  notify-discord:
+    needs: [plan, publish-github-release]
+    if: ${{ !cancelled() && !failure() && needs.plan.outputs.release == 'true' && needs.plan.outputs.channel == 'latest' }}
+    runs-on: ubuntu-24.04
+    environment: ${{ needs.plan.outputs.dry_run != 'true' && 'release' || '' }}
+    permissions:
+      contents: read
+    env: *env
+    steps:
+      - *checkout-release
+      - name: Notify
+        run: bash .github/release/notify-discord.sh
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           OPENCODE_RELEASE_NOTES: ${{ inputs.release_notes }}
 
   # Brings the release commit back to dev. Pushing to dev is blocked by rulesets, so it opens a PR.
